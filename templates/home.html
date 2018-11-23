@@ -1,6 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
 
+<script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script>
+
+
+<!-- body -->
+
 {{home_text}}
+<form class="prompt-form" action="destination.html">
+	$ <input class="prompt-box" type="text" value="">
+</form>
+
+<script>
+	$(".prompt-form").submit(function (event) {
+			console.log('Got prompt input:' + $(".prompt-box").val())
+
+			event.preventDefault();  // prevent postback
+	});
+
+</script>
+
+<!-- end body -->
+
+
 
 {% endblock %}

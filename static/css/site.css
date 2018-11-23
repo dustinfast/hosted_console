@@ -13,6 +13,11 @@ body {
 }
 
 .main-panel {
+  padding: 15px !important;
+  margin-bottom: 15px !important;
+}
+
+.console-panel {
     background: #111111;
     padding: 15px !important;
     margin-bottom: 15px !important;
