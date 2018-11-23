@@ -17,9 +17,13 @@ def home():
 
     return flask.render_template('home.html',
                                  title_string='title_string',
-                                 title_msg='title_msg',
+                                 home_text='home_text',
                                  desc_string='desc_string',
                                  year_string='year_string',
                                  author_string='author_string',
                                  copyright_link='copywrite_link',
                                  copyright_link_text='copyright_link_text')
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
