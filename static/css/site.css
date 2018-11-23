@@ -1,0 +1,19 @@
+﻿/* hosted_console's site-specific css /*
+/*
+/* Author: Dustin Fast, 2018
+*/
+
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.main-panel {
+    background: #111111;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+}

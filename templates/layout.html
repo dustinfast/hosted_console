@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>{{title_string}}</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="{{desc_string}}">
+        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}">
+        <script type=text/javascript>$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+    </head>
+
+    <body style="background: #4b4b49;">
+        <div class="container body-content">
+            <div class="navbar navbar-inverse">
+
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ url_for('home') }}">{{title_string}}</a>&nbsp;
+                    <br />
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="{{ url_for('home') }}">Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="jumbotron main-panel" style="white-space:nowrap;">
+                {{title_msg}}
+                {% block content %}
+                {% endblock %}
+                <br />
+                <h5>&copy;{{year_string}} - {{author_string}} - <a href="{{copyright_link_txt}}">{{copyright_link}}</a></h5>
+            </div>
+        </div>
+    </body>
+</html>
