@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script> -->
 
 
 <!-- body -->
@@ -12,8 +12,15 @@
 </form>
 
 <script>
+	// Get user input from prompt
 	$(".prompt-form").submit(function (event) {
-			console.log('Got prompt input:' + $(".prompt-box").val())
+			console.log('Got user :' + $(".prompt-box").val())
+
+			// Pass user's input to process level
+
+			// Get Response up
+
+			// Update web display with new terminal contents
 
 			event.preventDefault();  // prevent postback
 	});

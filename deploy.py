@@ -10,7 +10,7 @@ app = flask.Flask(__name__)
 
 @app.route('/')
 def home():
-    """ Serves home.html, the main console interface
+    """ Serves home.html, the main console interface.
     """
 
     # TODO: Get contents of terminal for web echo
