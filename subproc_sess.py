@@ -96,8 +96,8 @@ class SubprocSession(object):
                 self._print('\n')
                 break
 
-    def console(self):
-        """ Returns a string representation of the sessions contents.
+    def console_lines(self):
+        """ Returns a string representation of the session's inputs/outputs.
         """
         return str(self)
 
@@ -174,7 +174,7 @@ class ShoveQueue:
 
 if __name__ == '__main__':
     """ Example module usage - runs three seperate commands inside a single
-        bash session and prints results to the console.
+        bash session and prints the interaction to the console.
     """
     p = SubprocSession('bash')
     cmds = ['ls', 'pwd', 'ps aux']
@@ -182,5 +182,5 @@ if __name__ == '__main__':
     for cmd in cmds:
         p.post(cmd)
 
-    print(p.console())
+    print(p.console_lines())
     p.close()

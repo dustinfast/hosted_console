@@ -21,20 +21,19 @@
                     <a class="navbar-brand" href="{{ url_for('home') }}">{{title_string}}</a>&nbsp;
                     <br />
                 </div>
-                <div class="navbar-collapse collapse">
+                <!-- <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <li>
                             <a href="{{ url_for('home') }}">Home</a>
                         </li>
                     </ul>
-                </div>
+                </div> -->
             </div>
 
             <div class="jumbotron main-panel" style="white-space:nowrap;">
                 {% block content %}
                 {% endblock %}
-                <br />
-                <h5>&copy;{{year_string}} - {{author_string}} - <a href="{{copyright_link_txt}}">{{copyright_link}}</a></h5>
+                <h5><br />&copy;{{year_string}} - {{author_string}} - <a href="{{copyright_link}}">{{copyright_link_text}}</a></h5>
             </div>
         </div>
     </body>

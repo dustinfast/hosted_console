@@ -17,8 +17,41 @@ body {
   margin-bottom: 15px !important;
 }
 
-.console-panel {
+.console {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
     background: #111111;
-    padding: 15px !important;
-    margin-bottom: 15px !important;
+    color: #ffffff;
+    cursor: text;
+}
+
+.terminal-outter {
+    display: block;
+    height: 450px;
+    width: 100%;
+    border: 1px solid #656666;
+}
+
+.terminal {
+    display: table-cell;
+    height: 449px;
+    width: 98%;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-bottom: 1px !important;
+    border-bottom: 1px solid #656666;
+    vertical-align: bottom;
+}
+
+.prompt-box {
+    border-width: 0px;
+    display: inline-block;
+    height: 30px;
+    width: 95%;
+    outline: none;
+}
+
+.prompt {
+    display: inline-block;
+    height: 30px;
 }

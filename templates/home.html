@@ -1,20 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/home.js') }}"></script> -->
-
-
 <!-- body -->
 
-{{home_text}}
-<form class="prompt-form" action="destination.html">
-	$ <input class="prompt-box" type="text" value="">
+<div class="console terminal-outter">
+	<div class="console terminal">
+	</div>
+</div>
+
+<form class="console prompt-form" action="destination.html">
+	<div class="console prompt">&nbsp;$</div>
+	<input class="console prompt-box" type="text" value="">
 </form>
 
 <script>
+	$(document).ready(function () {
+		$(".prompt-form").trigger("submit");
+		$(".prompt-box").focus();
+	});
+
 	// Get user input from prompt
 	$(".prompt-form").submit(function (event) {
-		console.log('Got user :' + $(".prompt-box").val())
+		console.log('User input:' + $(".prompt-box").val())
 
 		// Pass user's input to process level
 		$.ajax({
@@ -26,23 +33,23 @@
 
 			// On no response from server
 			error: function (jqXHR, textStatus, errorThrown) {
-				console.warn('Error contacting server for content refresh.');
+				console.error('Error contacting server for content refresh.');
 			},
 
 			// On response from server
 			success: function (data) {
 				if (data == 'ERROR') {
-					console.error('Server-side error.')
+					console.error('Server indicated server-side error.')
 					return;
 				}
 
-				console.log("Got response from server: " + data.term_response);
+				console.log("Server response: " + data.term_response);
+				r = '<p>' + data.term_response + '</p>';
+				$(".terminal").html(r);   // Update terminal w/response txt
+				$(".prompt-box").val('')  // Clear prompt box
 			}
 		});
-
-
-		// Update web display with new terminal contents
-
+		
 		event.preventDefault();  // prevent postback
 	});
 

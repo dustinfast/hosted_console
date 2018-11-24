@@ -5,52 +5,55 @@
 """
 
 import flask
+from datetime import datetime
+from subproc_sess import SubprocSession
 
+BASH_CMD = 'bash'
+TITLE = 'Hosted Console'
+DESC = 'Hosted Console'
+AUTHOR = 'Dustin Fast'
+COPY_LINK = 'https://github.com/dustinfast'
+COPY_TEXT = 'https://github.com/dustinfast'
+
+# Globals
 app = flask.Flask(__name__)
+sess = SubprocSession(BASH_CMD, sep='<br />', lines=52, shell=True)
 
 @app.route('/')
 def home():
     """ Serves home.html, the main console interface.
     """
-
-    # TODO: Get contents of terminal for initial web echo
+    # Get console contents for initial web display
+    term_text = sess.console_lines()
 
     return flask.render_template('home.html',
-                                 title_string='hosted_console',
-                                 home_text='home_text',
-                                 desc_string='desc_string',
-                                 year_string='year_string',
-                                 author_string='author_string',
-                                 copyright_link='copywrite_link',
-                                 copyright_link_text='copyright_link_text')
+                                 title_string=TITLE,
+                                 terminal_text=term_text,
+                                 desc_string=DESC,
+                                 year_string=str(datetime.now().year),
+                                 author_string=AUTHOR,
+                                 copyright_link=COPY_LINK,
+                                 copyright_link_text=COPY_TEXT)
 
 
 @app.route('/_process_user_input', methods=['POST'])
-def _home_get_async_content():
+def _process_user_input():
     """ Receives user's textual input from the client and serves response.
     """
     user_input = flask.request.json['user_input']
-    print('USER INPUT= %s' % user_input)
+    print('---- USER INPUT= %s' % user_input)  # debug
 
-    return flask.jsonify(term_response=user_input)
+    response = ''
+    if user_input:
+        # Post the input to the process session
+        sess.post(user_input)
+        print('---- RESPONSE = %s' % response)  # debug
 
+    response = sess.console_lines()
 
-def console_interact(post):
-    """ 
-        Submits the given string (post) to the console and returns the results.
-        Returns:
-
-    """
-    # Get tty ID, so caller doesn't see itself.
-    pts = subprocess.Popen(post, shell=True, stdout=subprocess.PIPE)
-    console_response = pts.stdout.read()[:-1]  # Exclude newline char
-    print(console_response)
-
-    pts.stdout.close()
-    pts.terminate()
-
-    print(console_response)
+    return flask.jsonify(term_response=response)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
+    sess.close()
