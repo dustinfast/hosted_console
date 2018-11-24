@@ -56,23 +56,23 @@ class SubprocSession(object):
 
         self._print('Results for "%s":' % s)
 
-        s_disp = prompt + s
+        s_disp = prompt + s             # s w/ prompt string prefixed
         result_lines = [s_disp]         # Local results
         self.termlines.shove(s_disp)    # Instance results
 
-        if s[:-1] != '\n':              # Ensure s has nl ending
+        if s[:-1] != '\n':              # Ensure s has newline ending
             s += '\n'
 
-        self.shell.stdin.write(s)       # Post to processes stdin
+        self.shell.stdin.write(s)       # Post s to process' stdin
         self.shell.stdin.flush()
 
-        # Get response (as lines of txt) from process
+        # Get response from process' stdout
         while True:
             try:
                 line = self._return_q.get(timeout=self.timeout)
                 self.termlines.shove(line)  # Update instance results
                 result_lines.append(line)   # Update local results
-                self._print(line)           # Print to console (iff verbose)
+                self._print(line)           # Print verbose output to console
             except queue.Empty:
                 self._print('\n')
                 break
@@ -165,5 +165,4 @@ if __name__ == '__main__':
         lines = p.post(cmd)
         print('\n'.join(lines), '\n')
 
-    print(p)
     p.close()
