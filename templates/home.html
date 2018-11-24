@@ -14,15 +14,36 @@
 <script>
 	// Get user input from prompt
 	$(".prompt-form").submit(function (event) {
-			console.log('Got user :' + $(".prompt-box").val())
+		console.log('Got user :' + $(".prompt-box").val())
 
-			// Pass user's input to process level
+		// Pass user's input to process level
+		$.ajax({
+			url: $SCRIPT_ROOT + '/_process_user_input',
+			type: 'POST',
+			contentType: 'application/json;charset=UTF-8',
+			data: JSON.stringify({ 'user_input': $(".prompt-box").val() }),
+			timeout: 1000,
 
-			// Get Response up
+			// On no response from server
+			error: function (jqXHR, textStatus, errorThrown) {
+				console.warn('Error contacting server for content refresh.');
+			},
 
-			// Update web display with new terminal contents
+			// On response from server
+			success: function (data) {
+				if (data == 'ERROR') {
+					console.error('Server-side error.')
+					return;
+				}
 
-			event.preventDefault();  // prevent postback
+				console.log("Got response from server: " + data.term_response);
+			}
+		});
+
+
+		// Update web display with new terminal contents
+
+		event.preventDefault();  // prevent postback
 	});
 
 </script>
