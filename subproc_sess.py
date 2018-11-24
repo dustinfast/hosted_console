@@ -10,43 +10,64 @@ class SubprocSession(object):
     """ 
     __author__ = 'Dustin Fast (dustin.fast@outlook.com)'
 
-    def __init__(self, path, verbose=False, timeout=.1, lines=100, shell=False):
+    def __init__(self, path, verbose=False, timeout=.1, lines=100, sep='', 
+                 shell=False):
         """ Stats an interactive session with the process given by path.
             Accepts:
-                path   (str)    : Path to process to run (file name)
+                path    (str)   : Path to process to run (file name)
                 verbose (bool)  : Denotes verbose output
                 timeout (float) : Time to wait for input response
                 lines   (int)   : Number of stdout lines to keep in mem
-                shell   (bool)  : Denotes subprocess runs in shell. Has
+                sep     (str)   : Output line seperator
+                shell   (bool)  : Denotes subprocess runs in shell - has
                                   security risks (see python docs) but allows
                                   usage of pipe commands, etc.
         """
         # A representation of the input/output w/the process (by line)
-        self.termlines = ShoveQueue(maxsize=lines)
+        self._termlines = ShoveQueue(maxsize=lines)
 
+        # Init the instance
         self._return_q = queue.Queue()
-        self.stdout_watcher = Thread(target=self._watch_stdout)
-        self.shell = subprocess.Popen([path],
-                                      shell=shell,
-                                      encoding='utf8',
-                                      stdin=subprocess.PIPE,
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.STDOUT)
+        self._stdout_watcher = Thread(target=self._watch_stdout)
+        self._shell = subprocess.Popen([path],
+                                       shell=shell,
+                                       encoding='utf8',
+                                       stdin=subprocess.PIPE,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT)
         
-        self.verbose = verbose       # Denote verbose output option
-        self.timeout = timeout       # Wait time before assuming input 
+        self.verbose = verbose        # Denote verbose output option
+        self._seperator = sep         # Denote line seperator
+        self._timeout = timeout       # Wait time before assuming input 
 
-        self.running = True          # Denote stdout watcher is running
-        self.stdout_watcher.start()  # Start the stdout watcher thread
+        self._running = True          # Denote stdout watcher is running
+        self._stdout_watcher.start()  # Start the stdout watcher thread
 
     def __str__(self):
-        return str(self.termlines)
+        return str(self._termlines)
+
+    def _watch_stdout(self):
+        """ Watches the shell's stdout and pushes each line to self._return_q
+            for receipt in self.post. Intended to be called as a thread.
+        """
+        while self._running:
+            output = self._shell.stdout.readline()
+            if output:
+                self._return_q.put_nowait(output.strip())
 
     def _print(self, s):
-        """ Prints the given string to the console iff self.verbose.
+        """ Prints the given string iff self.verbose.
         """
         if self.verbose:
             print(s)
+
+    def _add_termline(self, s):
+        """ Appends a new line to the console contents followed by a seperator.
+        """
+        self._termlines.shove(s)
+
+        if self._seperator:
+            self._termlines.shove(self._seperator)
 
     def post(self, s, prompt='$ '):
         """ Writes string s to the session's stdin & returns resulting lines.
@@ -57,48 +78,45 @@ class SubprocSession(object):
         self._print('Results for "%s":' % s)
 
         s_disp = prompt + s             # s w/ prompt string prefixed
-        result_lines = [s_disp]         # Local results
-        self.termlines.shove(s_disp)    # Instance results
+        self._add_termline(s_disp)      # Update termlines with s
 
         if s[:-1] != '\n':              # Ensure s has newline ending
             s += '\n'
 
-        self.shell.stdin.write(s)       # Post s to process' stdin
-        self.shell.stdin.flush()
+        self._shell.stdin.write(s)       # Post s to process' stdin
+        self._shell.stdin.flush()
 
         # Get response from process' stdout
         while True:
             try:
-                line = self._return_q.get(timeout=self.timeout)
-                self.termlines.shove(line)  # Update instance results
-                result_lines.append(line)   # Update local results
+                line = self._return_q.get(timeout=self._timeout)
+                self._add_termline(line)    # Update termlines with response
                 self._print(line)           # Print verbose output to console
             except queue.Empty:
                 self._print('\n')
                 break
 
-        return result_lines
+    def console(self):
+        """ Returns a string representation of the sessions contents.
+        """
+        return str(self)
+
+    def flush(self):
+        """ Flushes all lines from the console representation.
+        """
+        self._termlines
 
     def close(self):
         self._print('Quitting subprocess...')
-        self.running = False
-        self.shell.stdin.close()
+        self._running = False
+        self._shell.stdin.close()
         try:
-            self.shell.wait()
-            self.stdout_watcher.join()
-            self._print('Done - exit code = %d' % self.shell.returncode)
+            self._shell.wait()
+            self._stdout_watcher.join()
+            self._print('Done - exit code = %d' % self._shell.returncode)
         except subprocess.TimeoutExpired:
             self._print('ERROR: Timed out waiting for subprocess to quit.')
             exit()
-
-    def _watch_stdout(self):
-        """ Watches the shell's stdout and pushes each line to self._return_q
-            for receipt in self.post. Intended to be called as a thread.
-        """
-        while self.running:
-            output = self.shell.stdout.readline()
-            if output:
-                self._return_q.put_nowait(output.strip())
 
 
 class ShoveQueue:
@@ -162,7 +180,7 @@ if __name__ == '__main__':
     cmds = ['ls', 'pwd', 'ps aux']
 
     for cmd in cmds:
-        lines = p.post(cmd)
-        print('\n'.join(lines), '\n')
+        p.post(cmd)
 
+    print(p.console())
     p.close()
