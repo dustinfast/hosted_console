@@ -123,6 +123,8 @@ class ShoveQueue:
     """ A "ShoveQueue" data structure. I.e. A queue that, on shove when full,
         makes room for new item by shoving the oldest item out of the queue.
     """
+    __author__ = 'Dustin Fast (dustin.fast@outlook.com)'
+
     def __init__(self, maxsize=None):
         self._items = []             # Queue container
         self._maxsize = maxsize      # Max items allowed in queue
