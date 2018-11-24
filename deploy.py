@@ -23,12 +23,8 @@ sess = SubprocSession(BASH_CMD, sep='<br />', lines=52, shell=True)
 def home():
     """ Serves home.html, the main console interface.
     """
-    # Get console contents for initial web display
-    term_text = sess.console_lines()
-
     return flask.render_template('home.html',
                                  title_string=TITLE,
-                                 terminal_text=term_text,
                                  desc_string=DESC,
                                  year_string=str(datetime.now().year),
                                  author_string=AUTHOR,
