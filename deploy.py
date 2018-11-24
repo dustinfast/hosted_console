@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" A simulated console, for use in hosting console applications.
+""" Web display with simulated console, for use in console application hosting.
 
     Author: Dustin Fast, 2018
 """
