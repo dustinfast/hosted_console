@@ -1,15 +1,18 @@
+""" A module providing interactive console sessions with subprocesses.
+
+    Author: Dustin Fast, 2018, dustin.fast@outlook.com
+"""
+
 #!/usr/bin/env python
+import time
 import queue
 import subprocess
 from threading import Thread
 
 class SubprocSession(object):
-    """ An interactive session with a specificed subprocess. 
-        Input may be passed to, and feedback received from, the suborocess.
-        To close the session, call SubproceSession.close().
+    """ An interactive console session with a specificed subprocess. 
+        Post input with post(). To close the session, use close().
     """ 
-    __author__ = 'Dustin Fast (dustin.fast@outlook.com)'
-
     def __init__(self, path, verbose=False, timeout=.1, lines=100, sep='', 
                  shell=False):
         """ Stats an interactive session with the process given by path.
@@ -114,6 +117,8 @@ class SubprocSession(object):
                 0    : False}.get(self._shell.poll()) 
 
     def close(self):
+        """ Closes the subprocess and does cleanup.
+        """
         self._print('Quitting subprocess...')
         self._running = False
         self._shell.stdin.close()
@@ -130,8 +135,6 @@ class ShoveQueue:
     """ A "ShoveQueue" data structure. I.e. A queue that, on shove(d) to a 
         full queue, pops the oldest item from the queue before enqueing d.
     """
-    __author__ = 'Dustin Fast (dustin.fast@outlook.com)'
-
     def __init__(self, maxsize=None):
         self._items = []             # Queue container
         self._maxsize = maxsize      # Max items allowed in queue
@@ -179,6 +182,12 @@ class ShoveQueue:
         """ Returns true iff queue at max capacity.
         """
         return self._maxsize and len(self) >= self._maxsize
+    
+    def items(self):
+        """ Returns a new list of the queues current items.
+        """
+        return [i for i in self._items]
+
 
 
 if __name__ == '__main__':
