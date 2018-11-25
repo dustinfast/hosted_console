@@ -62,7 +62,8 @@ class SubprocSession(object):
             print(s)
 
     def _add_termline(self, s):
-        """ Appends a new line to the console contents followed by a seperator.
+        """ Appends a new line to the termlines list followed by the
+            predefined seperator (if any).
         """
         self._termlines.shove(s)
 
@@ -106,6 +107,12 @@ class SubprocSession(object):
         """
         self._termlines
 
+    def is_alive(self):
+        """ Returns true iff the shell is still alive.
+        """
+        return {None : True,
+                0    : False}.get(self._shell.poll()) 
+
     def close(self):
         self._print('Quitting subprocess...')
         self._running = False
@@ -120,8 +127,8 @@ class SubprocSession(object):
 
 
 class ShoveQueue:
-    """ A "ShoveQueue" data structure. I.e. A queue that, on shove when full,
-        makes room for new item by shoving the oldest item out of the queue.
+    """ A "ShoveQueue" data structure. I.e. A queue that, on shove(d) to a 
+        full queue, pops the oldest item from the queue before enqueing d.
     """
     __author__ = 'Dustin Fast (dustin.fast@outlook.com)'
 
@@ -178,11 +185,10 @@ if __name__ == '__main__':
     """ Example module usage - runs three seperate commands inside a single
         bash session and prints the interaction to the console.
     """
-    p = SubprocSession('bash')
-    cmds = ['ls', 'pwd', 'ps aux']
+    p = SubprocSession('bash', verbose=True)
+    cmds = ['ls', 'pwd']
 
     for cmd in cmds:
         p.post(cmd)
 
-    print(p.console_lines())
     p.close()
