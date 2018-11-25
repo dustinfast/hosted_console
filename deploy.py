@@ -66,7 +66,7 @@ class OutterSession(object):
         self._inner_prompt = inner_prompt
         self._line_seperator = line_sep
 
-    def __str__(self):
+    def __str_ _(self):
         """ Returns a string representation of the console's lines.
         """
         # Build a list of the previous & current session's lines (if any)
